@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nintendo Switch 人気ゲームランキング</title>
+    <!-- TailwindCSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- BootStrapと似たような機能で、作成しているポートフォリオ(React/TypeScriptアプリケーションで使用するため、練習のため採用しています) -->
+    <style>
+        /* アニメーション用スタイル */
+        .slide-enter {
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        .slide-enter-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        .slide-exit {
+            transform: translateX(0);
+            opacity: 1;
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        .slide-exit-active {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-gray-900 text-white text-center py-6">
+        <h1 class="text-3xl font-bold">Nintendo Switch 人気ゲームランキング</h1>
+    </header>
+
+    <main class="p-6">
+        <!-- ゲームリストを表示するためのコンテナ -->
+        <div id="game-list-container" class="relative overflow-hidden">
+            <div id="game-list" class="grid grid-cols-6 gap-6">
+                <!-- JavaScriptでゲーム情報をここに挿入 -->
+            </div>
+        </div>
+
+        <!-- ページネーションボタン -->
+        <div class="flex justify-between mt-6">
+            <button id="prev-btn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 disabled:opacity-50" disabled>
+                前へ
+            </button>
+            <button id="next-btn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700">
+                次へ
+            </button>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white text-center py-4">
+        <p>データ提供元: <a href="https://kakaku.com" target="_blank" class="text-blue-400 hover:underline">価格.com</a></p>
+    </footer>
+
+    <!-- 生成したgame_data.jsファイルを読み込む -->
+    <script src="game_data.js"></script>
+
+    <!-- ページネーション用JavaScript -->
+    <script>
+        const gamesPerPage = 6;
+        let currentPage = 1;
+
+        const gameListContainer = document.getElementById('game-list-container');
+        const gameList = document.getElementById('game-list');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        // ゲームを表示する関数
+        function displayGames(page) {
+            // 現在表示している内容を一旦削除
+            gameList.innerHTML = '';
+            const start = (page - 1) * gamesPerPage;
+            const end = start + gamesPerPage;
+
+            // ゲームデータの一部をスライスして表示
+            const gamesToShow = gameData.slice(start, end);
+            gamesToShow.forEach(game => {
+                const gameItem = document.createElement('div');
+                gameItem.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md', 'text-center', 'slide-enter');
+
+                gameItem.innerHTML = `
+                    <a href="#">
+                        <img src="${game.image_url}" alt="${game.title}" class="w-full h-48 object-cover rounded-lg">
+                        <h2 class="text-lg font-bold mt-4">${game.title}</h2>
+                        <p class="text-lg text-gray-600 mt-2">最安値: ${game.price}</p>
+                        <p class="text-sm text-gray-500 mt-2">発売日: ${game.release_date}</p>
+                        <p class="text-sm text-gray-500 mt-1">メーカー: ${game.maker}</p>
+                    </a>
+                `;
+                gameList.appendChild(gameItem);
+            });
+
+            // アニメーションを追加
+            requestAnimationFrame(() => {
+                document.querySelectorAll('.slide-enter').forEach(el => {
+                    el.classList.add('slide-enter-active');
+                });
+            });
+        }
+
+        // ページを進める
+        function goToNextPage() {
+            if (currentPage * gamesPerPage < gameData.length) {
+                currentPage++;
+                displayGames(currentPage);
+            }
+            updateButtons();
+        }
+
+        // ページを戻る
+        function goToPrevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayGames(currentPage);
+            }
+            updateButtons();
+        }
+
+        // ボタンの状態を更新
+        function updateButtons() {
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage * gamesPerPage >= gameData.length;
+        }
+
+        // イベントリスナー
+        prevBtn.addEventListener('click', goToPrevPage);
+        nextBtn.addEventListener('click', goToNextPage);
+
+        // 初回の表示
+        displayGames(currentPage);
+    </script>
+</body>
+</html>
