@@ -6,7 +6,6 @@
     <title>Nintendo Switch 人気ゲームランキング</title>
     <!-- TailwindCSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <!-- BootStrapと似たような機能で、作成しているポートフォリオ(React/TypeScriptアプリケーションで使用するため、練習のため採用しています) -->
     <style>
         /* アニメーション用スタイル */
         .slide-enter {
@@ -18,20 +17,29 @@
             transform: translateX(0);
             opacity: 1;
         }
-        .slide-exit {
-            transform: translateX(0);
-            opacity: 1;
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        /* フッターとボタンの固定 */
+        body {
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 100px; /* フッターとボタンの高さ分の余白を確保 */
         }
-        .slide-exit-active {
-            transform: translateX(-100%);
-            opacity: 0;
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .pagination-container {
+            position: fixed;
+            bottom: 60px; /* フッターの上に配置（フッターの高さに応じて調整） */
+            width: 100%;
+            padding: 0 24px; /* mainの左右のpaddingと合わせる */
         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
     <header class="bg-gray-900 text-white text-center py-6">
-        <h1 class="text-3xl font-bold">Nintendo Switch 人気ゲームランキング</h1>
+        <h1 class="text-4xl font-bold">Nintendo Switch 人気ゲームランキング</h1>
+        <h1 class="text-1xl font-bold">更新日：2024/10/20 ( 2024/10/13 ～ 2024/10/19 の集計結果です)</h1>
     </header>
 
     <main class="p-6">
@@ -41,29 +49,27 @@
                 <!-- JavaScriptでゲーム情報をここに挿入 -->
             </div>
         </div>
-
-        <!-- ページネーションボタン -->
-        <div class="flex justify-between mt-6">
-            <button id="prev-btn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700 disabled:opacity-50" disabled>
-                前へ
-            </button>
-            <button id="next-btn" class="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-700">
-                次へ
-            </button>
-        </div>
     </main>
+
+    <!-- ページネーションボタン -->
+    <div class="flex justify-between mt-6 pagination-container">
+        <button id="prev-btn" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50" disabled>
+            前へ
+        </button>
+        <button id="next-btn" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
+            次へ
+        </button>
+    </div>
 
     <footer class="bg-gray-900 text-white text-center py-4">
         <p>データ提供元: <a href="https://kakaku.com" target="_blank" class="text-blue-400 hover:underline">価格.com</a></p>
     </footer>
 
-    <!-- 生成したgame_data.jsファイルを読み込む -->
-    <script src="game_data.js"></script>
-
     <!-- ページネーション用JavaScript -->
     <script>
         const gamesPerPage = 6;
         let currentPage = 1;
+        let gameData = [];
 
         const gameListContainer = document.getElementById('game-list-container');
         const gameList = document.getElementById('game-list');
@@ -83,9 +89,27 @@
                 const gameItem = document.createElement('div');
                 gameItem.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow-md', 'text-center', 'slide-enter');
 
+                // ランキングとメダルの表示
+                let rankDisplay = '';
+                if (game.rank === 1) {
+                    rankDisplay = `🥇 ${game.rank}位`; // 金メダルと順位
+                } else if (game.rank === 2) {
+                    rankDisplay = `🥈 ${game.rank}位`; // 銀メダルと順位
+                } else if (game.rank === 3) {
+                    rankDisplay = `🥉 ${game.rank}位`; // 銅メダルと順位
+                } else {
+                    rankDisplay = `${game.rank}位`; // 4位以降の順位
+                }
+
+                // 画像のサイズを統一
+                const image_url = game.image_url;
+                const imageElement = `<img src="${image_url}" alt="${game.title}" class="w-full h-32 object-cover rounded-lg">`;
+
                 gameItem.innerHTML = `
                     <a href="#">
-                        <img src="${game.image_url}" alt="${game.title}" class="w-full h-48 object-cover rounded-lg">
+                        <!-- ランキングとメダル -->
+                        <div class="text-xl font-bold mb-2">${rankDisplay}</div>
+                        ${imageElement}
                         <h2 class="text-lg font-bold mt-4">${game.title}</h2>
                         <p class="text-lg text-gray-600 mt-2">最安値: ${game.price}</p>
                         <p class="text-sm text-gray-500 mt-2">発売日: ${game.release_date}</p>
@@ -131,8 +155,17 @@
         prevBtn.addEventListener('click', goToPrevPage);
         nextBtn.addEventListener('click', goToNextPage);
 
-        // 初回の表示
-        displayGames(currentPage);
+        // ゲームデータを取得して初期表示を行う
+        fetch('game_data.json')
+            .then(response => response.json())
+            .then(data => {
+                gameData = data;
+                displayGames(currentPage);
+                updateButtons();
+            })
+            .catch(error => {
+                console.error('ゲームデータの取得に失敗しました:', error);
+            });
     </script>
 </body>
 </html>
