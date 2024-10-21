@@ -39,7 +39,7 @@
 <body class="bg-gray-100 text-gray-800">
     <header class="bg-gray-900 text-white text-center py-6">
         <h1 class="text-4xl font-bold">Nintendo Switch 人気ゲームランキング</h1>
-        <h1 class="text-1xl font-bold">更新日：2024/10/20 ( 2024/10/13 ～ 2024/10/19 の集計結果です)</h1>
+        <h1 id="update-data" class="text-1xl font-bold mt-4"></h1>
     </header>
 
     <main class="p-6">
@@ -166,6 +166,23 @@
             .catch(error => {
                 console.error('ゲームデータの取得に失敗しました:', error);
             });
+
+        // 更新日を取得する関数
+        function fetchUpdateDate() {
+        fetch('update_date.json')
+            .then(response => response.json())
+            .then(data => {
+                const updateDate = data.update_date || '更新日情報なし';
+                document.getElementById('update-date').innerText = updateDate;
+            })
+            .catch(error => {
+                console.error('更新日データの取得に失敗しました:', error);
+                document.getElementById('update-date').innerText = '更新日情報なし';
+            });
+        }
+        // ページが読み込まれたときに更新日を取得
+        window.onload = fetchUpdateDate;
+
     </script>
 </body>
 </html>

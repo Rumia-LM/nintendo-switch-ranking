@@ -1,12 +1,3 @@
-#**********************************************************************************
-#	
-#	robots.txtファイルから判断すると(https://kakaku.com/robots.txt)
-#	価格.comでは特定のパスに対してWebスクレイピングやクローリングが禁止されていますが、
-#	/game/nintendo-switch/ranking_4143/ のページ自体は特にDisallowされていない。
-#	このため、スクレイピング自体は利用規約に違反しないようです。
-#	
-#**********************************************************************************
-
 import requests
 from bs4 import BeautifulSoup
 import json
@@ -20,6 +11,10 @@ try:
     response.raise_for_status()  # HTTPエラーが発生した場合は例外を発生させる
 
     soup = BeautifulSoup(response.content, 'html.parser')
+
+    # 更新日を取得
+    update_notice = soup.find('p', class_='notice alignR mTop5')
+    update_date = update_notice.text.strip() if update_notice else '更新日情報なし'
 
     # ゲームデータを格納するリスト
     games = []
@@ -66,6 +61,10 @@ try:
     # JSONファイルを生成
     with open('game_data.json', 'w', encoding='utf-8') as f:
         json.dump(games, f, ensure_ascii=False, indent=2)
+
+    # 更新日だけのJSONファイルを生成
+    with open('update_date.json', 'w', encoding='utf-8') as f:
+        json.dump({"update_date": update_date}, f, ensure_ascii=False, indent=2)
 
     print("データの取得と保存が完了しました。")
 except requests.exceptions.RequestException as e:
