@@ -46,6 +46,10 @@ try:
             # メーカー名を取得
             maker_div = box.find('div', class_='rkgMaker')
             maker = maker_div.find('a').text.strip() if maker_div else ''
+            
+            # ゲーム詳細ページのURLを取得
+            detail_link_tag = box.find('a', class_='rkgBoxLink')
+            detail_url = detail_link_tag['href'] if detail_link_tag else ''
 
             # ゲーム情報を辞書に格納
             games.append({
