@@ -6,6 +6,8 @@
     <title>Nintendo Switch 人気ゲームランキング</title>
     <!-- TailwindCSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         /* アニメーション用スタイル */
         .slide-enter {
@@ -61,8 +63,16 @@
         </button>
     </div>
 
-    <footer class="bg-gray-900 text-white text-center py-4">
+    <footer class="bg-gray-900 text-white text-center py-4 flex justify-between items-center px-4">
         <p>データ提供元: <a href="https://kakaku.com" target="_blank" class="text-blue-400 hover:underline">価格.com</a></p>
+        <div>
+            <a href="https://github.com/yourusername" target="_blank" class="text-white mx-2">
+                <i class="fab fa-github"></i>
+            </a>
+            <a href="https://twitter.com/yourusername" target="_blank" class="text-white mx-2">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </div>
     </footer>
 
     <!-- ページネーション用JavaScript -->
@@ -106,7 +116,7 @@
                 const imageElement = `<img src="${image_url}" alt="${game.title}" class="w-full h-32 object-cover rounded-lg">`;
 
                 gameItem.innerHTML = `
-                    <a href="#">
+                    <a href="${game.detail_url}">
                         <!-- ランキングとメダル -->
                         <div class="text-xl font-bold mb-2">${rankDisplay}</div>
                         ${imageElement}

@@ -53,7 +53,8 @@ try:
                 "price": price,
                 "image_url": image_url,
                 "release_date": release_date,
-                "maker": maker
+                "maker": maker,
+                "detail_url": detail_url
             })
         except AttributeError as e:
             print(f"データのパース中にエラーが発生しました（順位: {rank}）：{e}")
